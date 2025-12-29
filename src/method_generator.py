@@ -22,6 +22,10 @@ JAVA_LITERALS = {
     "null", "true", "false"
 }
 
+indent_lvl1 = "    "
+indent_lvl2 = indent_lvl1 * 2
+indent_lvl3 = indent_lvl1 * 3
+
 
 @dataclass
 class Field:
@@ -37,12 +41,33 @@ def generate_getter(attr: Field) -> str:
 
     getter_name = "get" + attr_name[0].upper() + attr_name[1:]
 
-    getter = f"""
-    public {attr_type} {getter_name}() {{
-        return {attr_name};
-    }}
-    """
+    getter = [
+        "",
+        f"{indent_lvl1}public {attr_type} {getter_name}() {{",
+        f"{indent_lvl2}return {attr_name};",
+        f"{indent_lvl1}}}"
+    ]
+    getter = "\n".join(getter)
+
     return getter
+
+
+def generate_setter(attr: Field) -> str:
+    attr_name = attr.name
+    attr_type = attr.type
+
+    _validate_java_identifier(attr_name)
+
+    setter_name = "set" + attr_name[0].upper() + attr_name[1:]
+
+    setter = [
+        "",
+        f"{indent_lvl1}public void {setter_name}({attr_type} {attr_name}) {{",
+        f"{indent_lvl2}this.{attr_name} = {attr_name};",
+        f"{indent_lvl1}}}"
+    ]
+    setter = "\n".join(setter)
+    return setter
 
 
 def _validate_java_identifier(name: str) -> None:
