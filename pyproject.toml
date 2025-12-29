@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "jsonschema-2-javaclass"
+version = "0.1.0"
+description = "Java Class generator"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pytest = "^8.3.5"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.14.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
