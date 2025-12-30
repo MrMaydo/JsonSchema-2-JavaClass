@@ -136,3 +136,27 @@ def test_generate_fields_block():
      */
     private CustomObject customData;"""
     assert generate_fields_block(attributes) == expected
+
+
+def test_generate_hash_code():
+    attr1 = field_exampleAttribute_int
+    attr2 = field_someName_String
+    attr3 = field_customData_CustomObject
+    attributes = [attr1, attr2, attr3]
+    expected = """
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                getExampleAttribute(),
+                getSomeName(),
+                getCustomData()
+        );
+    }"""
+    assert generate_hash_code(attributes) == expected
+
+
+def test_generate_hash_code_invalid_name():
+    for name in illegal_names:
+        attr = Field(name=name, type="String")
+        with pytest.raises(ValueError):
+            generate_hash_code([attr])
