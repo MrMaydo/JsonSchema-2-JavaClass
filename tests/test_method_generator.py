@@ -1,7 +1,7 @@
 import pytest
 
-from src.method_generator import generate_getter, Field, generate_setter, generate_getters_and_setters, \
-    generate_field_declaration, generate_fields_block
+from tests.reference_data import *
+from src.method_generator import *
 
 JAVA_KEYWORDS = {
     "abstract", "assert", "boolean", "break", "byte", "case", "catch",
@@ -27,39 +27,28 @@ EMPTY_NAMES = {None, ""}
 
 MALFORMED_IDENTIFIERS = {"3", "abc-d", "gf*d"}
 
+illegal_names = JAVA_KEYWORDS | JAVA_BUILTIN_TYPES | JAVA_LITERALS | EMPTY_NAMES | MALFORMED_IDENTIFIERS
+
 
 def test_generate_getter_integer():
-    attr = Field(
-        name="exampleAttribute",
-        type="int"
-    )
-    expected = """
-    public int getExampleAttribute() {
-        return exampleAttribute;
-    }"""
-    assert (generate_getter(attr) == expected)
+    attr = field_exampleAttribute_int
+
+    assert (generate_getter(attr) == expected_getExampleAttribute_int)
 
 
 def test_generate_getter_string():
-    attr = Field(name="someName", type="String")
-    expected = """
-    public String getSomeName() {
-        return someName;
-    }"""
-    assert (generate_getter(attr) == expected)
+    attr = field_someName_String
+
+    assert (generate_getter(attr) == expected_getSomeName_String)
 
 
 def test_generate_getter_custom_object():
-    attr = Field(name="customData", type="CustomObject")
-    expected = """
-    public CustomObject getCustomData() {
-        return customData;
-    }"""
-    assert (generate_getter(attr) == expected)
+    attr = field_customData_CustomObject
+
+    assert (generate_getter(attr) == expected_getCustomData_CustomObject)
 
 
 def test_generate_getter_invalid_name():
-    illegal_names = JAVA_KEYWORDS | JAVA_BUILTIN_TYPES | JAVA_LITERALS | EMPTY_NAMES | MALFORMED_IDENTIFIERS
     for name in illegal_names:
         attr = Field(name=name, type="String")
         with pytest.raises(ValueError):
@@ -67,34 +56,24 @@ def test_generate_getter_invalid_name():
 
 
 def test_generate_setter_integer():
-    attr = Field(name="exampleAttribute", type="int")
-    expected = """
-    public void setExampleAttribute(int exampleAttribute) {
-        this.exampleAttribute = exampleAttribute;
-    }"""
-    assert (generate_setter(attr) == expected)
+    attr = field_exampleAttribute_int
+
+    assert (generate_setter(attr) == expected_setExampleAttribute_int)
 
 
 def test_generate_setter_string():
-    attr = Field(name="someName", type="String")
-    expected = """
-    public void setSomeName(String someName) {
-        this.someName = someName;
-    }"""
-    assert (generate_setter(attr) == expected)
+    attr = field_someName_String
+
+    assert (generate_setter(attr) == expected_setSomeName_String)
 
 
 def test_generate_setter_custom_object():
-    attr = Field(name="customData", type="CustomObject")
-    expected = """
-    public void setCustomData(CustomObject customData) {
-        this.customData = customData;
-    }"""
-    assert (generate_setter(attr) == expected)
+    attr = field_customData_CustomObject
+
+    assert (generate_setter(attr) == expected_setCustomData_CustomObject)
 
 
 def test_generate_setter_invalid_name():
-    illegal_names = JAVA_KEYWORDS | JAVA_BUILTIN_TYPES | JAVA_LITERALS | EMPTY_NAMES | MALFORMED_IDENTIFIERS
     for name in illegal_names:
         attr = Field(name=name, type="String")
         with pytest.raises(ValueError):
@@ -102,27 +81,21 @@ def test_generate_setter_invalid_name():
 
 
 def test_generate_getters_and_setters():
-    attr1 = Field(name="exampleAttribute", type="int")
-    attr2 = Field(name="customData", type="CustomObject")
+    attr1 = field_exampleAttribute_int
+    attr2 = field_customData_CustomObject
     attributes = [attr1, attr2]
-    expected = """
-    public int getExampleAttribute() {
-        return exampleAttribute;
-    }\n\n
-    public void setExampleAttribute(int exampleAttribute) {
-        this.exampleAttribute = exampleAttribute;
-    }\n\n
-    public CustomObject getCustomData() {
-        return customData;
-    }\n\n
-    public void setCustomData(CustomObject customData) {
-        this.customData = customData;
-    }"""
+
+    expected = "\n\n".join([
+        expected_getExampleAttribute_int,
+        expected_setExampleAttribute_int,
+        expected_getCustomData_CustomObject,
+        expected_setCustomData_CustomObject
+    ])
     assert generate_getters_and_setters(attributes) == expected
 
 
 def test_generate_field_declaration():
-    attr = Field(name="exampleAttribute", type="int", description="javadoc description")
+    attr = field_exampleAttribute_int
     expected = """
     /**
      * javadoc description
@@ -133,15 +106,14 @@ def test_generate_field_declaration():
 
 
 def test_generate_field_declaration_no_description():
-    attr = Field(name="customData", type="CustomObject")
+    attr = field_someName_String
     expected = """
-    private CustomObject customData;"""
+    private String someName;"""
 
     assert generate_field_declaration(attr) == expected
 
 
 def test_generate_field_declaration_invalid_name():
-    illegal_names = JAVA_KEYWORDS | JAVA_BUILTIN_TYPES | JAVA_LITERALS | EMPTY_NAMES | MALFORMED_IDENTIFIERS
     for name in illegal_names:
         attr = Field(name=name, type="String")
         with pytest.raises(ValueError):
@@ -149,18 +121,16 @@ def test_generate_field_declaration_invalid_name():
 
 
 def test_generate_fields_block():
-    attr1 = Field(name="exampleAttribute", type="int", description="javadoc description")
-    attr2 = Field(name="someName", type="String")
-    attr3 = Field(name="customData", type="CustomObject", description="another javadoc description")
+    attr1 = field_exampleAttribute_int
+    attr2 = field_someName_String
+    attr3 = field_customData_CustomObject
     attributes = [attr1, attr2, attr3]
     expected = """
     /**
      * javadoc description
      */
-    private int exampleAttribute;
-
-    private String someName;
-
+    private int exampleAttribute;\n
+    private String someName;\n
     /**
      * another javadoc description
      */

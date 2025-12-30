@@ -35,7 +35,7 @@ class Field:
 
 
 def generate_fields_block(fields: List[Field]) -> str:
-    declaration: list[str] = []
+    declaration = []
     for field in fields:
         declaration.append(generate_field_declaration(field))
 
@@ -61,7 +61,7 @@ def generate_field_declaration(field: Field) -> str:
 
 
 def generate_getters_and_setters(fields: List[Field]) -> str:
-    methods: list[str] = []
+    methods = []
     for field in fields:
         methods.append(generate_getter(field))
         methods.append(generate_setter(field))
