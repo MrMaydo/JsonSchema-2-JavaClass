@@ -1,7 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import List
-
+from typing import List, Optional
 
 JAVA_KEYWORDS = {
     "abstract", "assert", "boolean", "break", "byte", "case", "catch",
@@ -32,6 +31,33 @@ indent_lvl3 = indent_lvl1 * 3
 class Field:
     name: str
     type: str
+    description: Optional[str] = None
+
+
+def generate_fields_block(fields: List[Field]) -> str:
+    declaration: list[str] = []
+    for field in fields:
+        declaration.append(generate_field_declaration(field))
+
+    return "\n".join(declaration)
+
+
+def generate_field_declaration(field: Field) -> str:
+    _validate_java_identifier(field.name)
+    if field.description:
+        javadoc = "\n".join([
+            "",
+            f"{indent_lvl1}/**",
+            f"{indent_lvl1} * {field.description}",
+            f"{indent_lvl1} */"
+        ])
+    else:
+        javadoc = ""
+    declaration = [
+        javadoc,
+        f"{indent_lvl1}private {field.type} {field.name};"
+    ]
+    return "\n".join(declaration)
 
 
 def generate_getters_and_setters(fields: List[Field]) -> str:
