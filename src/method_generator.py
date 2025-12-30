@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from typing import List
 
 
 JAVA_KEYWORDS = {
@@ -33,18 +34,27 @@ class Field:
     type: str
 
 
-def generate_getter(attr: Field) -> str:
-    attr_name = attr.name
-    attr_type = attr.type
+def generate_getters_and_setters(fields: List[Field]) -> str:
+    methods: list[str] = []
+    for field in fields:
+        methods.append(generate_getter(field))
+        methods.append(generate_setter(field))
 
-    _validate_java_identifier(attr_name)
+    return "\n\n".join(methods)
 
-    getter_name = "get" + attr_name[0].upper() + attr_name[1:]
+
+def generate_getter(field: Field) -> str:
+    field_name = field.name
+    field_type = field.type
+
+    _validate_java_identifier(field_name)
+
+    getter_name = "get" + field_name[0].upper() + field_name[1:]
 
     getter = [
         "",
-        f"{indent_lvl1}public {attr_type} {getter_name}() {{",
-        f"{indent_lvl2}return {attr_name};",
+        f"{indent_lvl1}public {field_type} {getter_name}() {{",
+        f"{indent_lvl2}return {field_name};",
         f"{indent_lvl1}}}"
     ]
     getter = "\n".join(getter)
@@ -52,18 +62,18 @@ def generate_getter(attr: Field) -> str:
     return getter
 
 
-def generate_setter(attr: Field) -> str:
-    attr_name = attr.name
-    attr_type = attr.type
+def generate_setter(field: Field) -> str:
+    field_name = field.name
+    field_type = field.type
 
-    _validate_java_identifier(attr_name)
+    _validate_java_identifier(field_name)
 
-    setter_name = "set" + attr_name[0].upper() + attr_name[1:]
+    setter_name = "set" + field_name[0].upper() + field_name[1:]
 
     setter = [
         "",
-        f"{indent_lvl1}public void {setter_name}({attr_type} {attr_name}) {{",
-        f"{indent_lvl2}this.{attr_name} = {attr_name};",
+        f"{indent_lvl1}public void {setter_name}({field_type} {field_name}) {{",
+        f"{indent_lvl2}this.{field_name} = {field_name};",
         f"{indent_lvl1}}}"
     ]
     setter = "\n".join(setter)
