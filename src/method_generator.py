@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-
+from typing import List, Optional
 
 JAVA_KEYWORDS = {
     "abstract", "assert", "boolean", "break", "byte", "case", "catch",
@@ -31,20 +31,56 @@ indent_lvl3 = indent_lvl1 * 3
 class Field:
     name: str
     type: str
+    description: Optional[str] = None
 
 
-def generate_getter(attr: Field) -> str:
-    attr_name = attr.name
-    attr_type = attr.type
+def generate_fields_block(fields: List[Field]) -> str:
+    declaration = []
+    for field in fields:
+        declaration.append(generate_field_declaration(field))
 
-    _validate_java_identifier(attr_name)
+    return "\n".join(declaration)
 
-    getter_name = "get" + attr_name[0].upper() + attr_name[1:]
+
+def generate_field_declaration(field: Field) -> str:
+    _validate_java_identifier(field.name)
+    if field.description:
+        javadoc = "\n".join([
+            "",
+            f"{indent_lvl1}/**",
+            f"{indent_lvl1} * {field.description}",
+            f"{indent_lvl1} */"
+        ])
+    else:
+        javadoc = ""
+    declaration = [
+        javadoc,
+        f"{indent_lvl1}private {field.type} {field.name};"
+    ]
+    return "\n".join(declaration)
+
+
+def generate_getters_and_setters(fields: List[Field]) -> str:
+    methods = []
+    for field in fields:
+        methods.append(generate_getter(field))
+        methods.append(generate_setter(field))
+
+    return "\n\n".join(methods)
+
+
+def generate_getter(field: Field) -> str:
+    field_name = field.name
+    field_type = field.type
+
+    _validate_java_identifier(field_name)
+
+    getter_name = "get" + field_name[0].upper() + field_name[1:]
 
     getter = [
         "",
-        f"{indent_lvl1}public {attr_type} {getter_name}() {{",
-        f"{indent_lvl2}return {attr_name};",
+        f"{indent_lvl1}public {field_type} {getter_name}() {{",
+        f"{indent_lvl2}return {field_name};",
         f"{indent_lvl1}}}"
     ]
     getter = "\n".join(getter)
@@ -52,22 +88,42 @@ def generate_getter(attr: Field) -> str:
     return getter
 
 
-def generate_setter(attr: Field) -> str:
-    attr_name = attr.name
-    attr_type = attr.type
+def generate_setter(field: Field) -> str:
+    field_name = field.name
+    field_type = field.type
 
-    _validate_java_identifier(attr_name)
+    _validate_java_identifier(field_name)
 
-    setter_name = "set" + attr_name[0].upper() + attr_name[1:]
+    setter_name = "set" + field_name[0].upper() + field_name[1:]
 
     setter = [
         "",
-        f"{indent_lvl1}public void {setter_name}({attr_type} {attr_name}) {{",
-        f"{indent_lvl2}this.{attr_name} = {attr_name};",
+        f"{indent_lvl1}public void {setter_name}({field_type} {field_name}) {{",
+        f"{indent_lvl2}this.{field_name} = {field_name};",
         f"{indent_lvl1}}}"
     ]
     setter = "\n".join(setter)
     return setter
+
+
+def generate_hash_code(fields: List[Field]) -> str:
+    hash_code = [
+        "",
+        f"{indent_lvl1}@Override",
+        f"{indent_lvl1}public int hashCode() {{",
+        f"{indent_lvl2}return Objects.hash("
+    ]
+
+    for i, field in enumerate(fields):
+        _validate_java_identifier(field.name)
+        getter_name = "get" + field.name[0].upper() + field.name[1:]
+        comma = "," if i < (len(fields) - 1) else ""
+        hash_code.append(f"{indent_lvl2}        {getter_name}(){comma}")
+
+    hash_code.append(f"{indent_lvl2});")
+    hash_code.append(f"{indent_lvl1}}}")
+
+    return "\n".join(hash_code)
 
 
 def _validate_java_identifier(name: str) -> None:
