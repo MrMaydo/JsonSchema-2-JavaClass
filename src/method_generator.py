@@ -138,17 +138,25 @@ def generate_hash_code(fields: List[Field]) -> str:
     hash_code = [
         "",
         f"{indent_lvl1}@Override",
-        f"{indent_lvl1}public int hashCode() {{",
-        f"{indent_lvl2}return Objects.hash("
+        f"{indent_lvl1}public int hashCode() {{"
     ]
 
     for i, field in enumerate(fields):
         _validate_java_identifier(field.name)
         getter_name = "get" + field.name[0].upper() + field.name[1:]
         comma = "," if i < (len(fields) - 1) else ""
-        hash_code.append(f"{indent_lvl2}        {getter_name}(){comma}")
 
-    hash_code.append(f"{indent_lvl2});")
+        if len(fields) == 1:
+            hash_code.append(f"{indent_lvl2}return Objects.hash({getter_name}());")
+        elif len(fields) > 1 and i == 0:
+            hash_code.append(f"{indent_lvl2}return Objects.hash(")
+            hash_code.append(f"{indent_lvl2}        {getter_name}(){comma}")
+        elif len(fields) > 1 and i == (len(fields) - 1):
+            hash_code.append(f"{indent_lvl2}        {getter_name}(){comma}")
+            hash_code.append(f"{indent_lvl2});")
+        else:
+            hash_code.append(f"{indent_lvl2}        {getter_name}(){comma}")
+
     hash_code.append(f"{indent_lvl1}}}")
 
     return "\n".join(hash_code)

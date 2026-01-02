@@ -155,6 +155,16 @@ def test_generate_hash_code():
     assert generate_hash_code(attributes) == expected
 
 
+def test_generate_hash_code_one_field():
+    attr = field_exampleAttribute_int
+    expected = """
+    @Override
+    public int hashCode() {
+        return Objects.hash(getExampleAttribute());
+    }"""
+    assert generate_hash_code([attr]) == expected
+
+
 def test_generate_hash_code_invalid_name():
     for name in illegal_names:
         attr = Field(name=name, type="String")
