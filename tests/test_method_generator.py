@@ -160,3 +160,31 @@ def test_generate_hash_code_invalid_name():
         attr = Field(name=name, type="String")
         with pytest.raises(ValueError):
             generate_hash_code([attr])
+
+
+def test_generate_equals():
+    class_name = "MyClass"
+    attr1 = field_exampleAttribute_int
+    attr2 = field_someName_String
+    attr3 = field_customData_CustomObject
+    attributes = [attr1, attr2, attr3]
+    expected = """
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof MyClass))
+            return false;
+        MyClass that = (MyClass) obj;
+        return Objects.equals(getExampleAttribute(), that.getExampleAttribute())
+                && Objects.equals(getSomeName(), that.getSomeName())
+                && Objects.equals(getCustomData(), that.getCustomData());
+    }"""
+    assert generate_equals(class_name, attributes) == expected
+
+
+def test_generate_hash_code_invalid_name():
+    for name in illegal_names:
+        attr = Field(name=name, type="String")
+        with pytest.raises(ValueError):
+            generate_equals("MyClass", [attr])

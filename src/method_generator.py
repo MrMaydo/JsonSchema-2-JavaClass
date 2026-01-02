@@ -106,6 +106,34 @@ def generate_setter(field: Field) -> str:
     return setter
 
 
+def generate_equals(class_name: str, fields: List[Field]) -> str:
+    equals = [
+        "",
+        f"{indent_lvl1}@Override",
+        f"{indent_lvl1}public boolean equals(Object obj) {{",
+
+        f"{indent_lvl2}if (this == obj)",
+        f"{indent_lvl3}return true;",
+
+        f"{indent_lvl2}if (!(obj instanceof {class_name}))",
+        f"{indent_lvl3}return false;",
+
+        f"{indent_lvl2}{class_name} that = ({class_name}) obj;"
+    ]
+
+    for i, field in enumerate(fields):
+        _validate_java_identifier(field.name)
+        getter_name = "get" + field.name[0].upper() + field.name[1:]
+        semicolon = ";" if i == (len(fields) - 1) else ""
+        if i == 0:
+            equals.append(f"{indent_lvl2}return Objects.equals({getter_name}(), that.{getter_name}()){semicolon}")
+        else:
+            equals.append(f"{indent_lvl2}        && Objects.equals({getter_name}(), that.{getter_name}()){semicolon}")
+    equals.append(f"{indent_lvl1}}}")
+
+    return "\n".join(equals)
+
+
 def generate_hash_code(fields: List[Field]) -> str:
     hash_code = [
         "",
