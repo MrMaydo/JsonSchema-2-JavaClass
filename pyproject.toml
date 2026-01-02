@@ -12,7 +12,13 @@ pytest = "^8.3.5"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.14.10"
+pytest-html = "^4.1.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = """-v --cov=src --cov-report=term-missing --cov-report=html:reports/coverage --html=reports/report.html --self-contained-html"""
+testpaths = ["tests"]
+
