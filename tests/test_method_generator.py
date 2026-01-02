@@ -193,7 +193,23 @@ def test_generate_equals():
     assert generate_equals(class_name, attributes) == expected
 
 
-def test_generate_hash_code_invalid_name():
+def test_generate_equals_one_field():
+    class_name = "AnotherClass"
+    attr = field_someName_String
+    expected = """
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof AnotherClass))
+            return false;
+        AnotherClass that = (AnotherClass) obj;
+        return Objects.equals(getSomeName(), that.getSomeName());
+    }"""
+    assert generate_equals(class_name, [attr]) == expected
+
+
+def test_generate_equals_invalid_name():
     for name in illegal_names:
         attr = Field(name=name, type="String")
         with pytest.raises(ValueError):
