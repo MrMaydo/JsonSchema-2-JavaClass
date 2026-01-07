@@ -1,20 +1,8 @@
 import re
-from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 
+from src.java_model import EnumClass, indent_lvl1, indent_lvl2, indent_lvl3
 from src.header_generator import set_package
-
-
-@dataclass
-class EnumClass:
-    name: str
-    values: List[str]
-    description: Optional[str] = None
-
-
-indent_lvl1 = "    "
-indent_lvl2 = indent_lvl1 * 2
-indent_lvl3 = indent_lvl1 * 3
 
 
 def to_java_constant(value: str) -> str:
@@ -34,7 +22,7 @@ def generate_enum_class(enum_class: EnumClass, package: str) -> str:
         f"import java.util.HashMap;",
         f"import java.util.Map;",
         f""
-        ]
+    ]
 
     enum_body.extend(_get_javadoc(enum_class.description))
 
@@ -42,7 +30,8 @@ def generate_enum_class(enum_class: EnumClass, package: str) -> str:
     enum_body.extend(_get_constants(enum_class.values))
 
     enum_body.append(f"")
-    enum_body.append(f"{indent_lvl1}private final static Map<String, {enum_class.name}> CONSTANTS = new HashMap<String, {enum_class.name}>();")
+    enum_body.append(
+        f"{indent_lvl1}private final static Map<String, {enum_class.name}> CONSTANTS = new HashMap<String, {enum_class.name}>();")
     enum_body.append(f"")
     enum_body.extend(_get_static_method(enum_class.name))
 
@@ -52,10 +41,10 @@ def generate_enum_class(enum_class: EnumClass, package: str) -> str:
     enum_body.extend(_get_constructor(enum_class.name))
 
     enum_body.append(f"")
-    enum_body.extend(_get_fromValue_method(enum_class.name))
+    enum_body.extend(_get_from_value_method(enum_class.name))
 
     enum_body.append(f"")
-    enum_body.extend(_get_toString_method())
+    enum_body.extend(_get_to_string_method())
 
     enum_body.append(f"")
     enum_body.extend(_get_value_method())
@@ -107,7 +96,7 @@ def _get_constructor(class_name: str) -> List[str]:
     return body
 
 
-def _get_fromValue_method(class_name: str) -> List[str]:
+def _get_from_value_method(class_name: str) -> List[str]:
     body = [
         f"{indent_lvl1}public static {class_name} fromValue(String value) {{",
         f"{indent_lvl2}{class_name} constant = CONSTANTS.get(value);",
@@ -121,7 +110,7 @@ def _get_fromValue_method(class_name: str) -> List[str]:
     return body
 
 
-def _get_toString_method() -> List[str]:
+def _get_to_string_method() -> List[str]:
     body = [
         f"{indent_lvl1}@Override",
         f"{indent_lvl1}public String toString() {{",

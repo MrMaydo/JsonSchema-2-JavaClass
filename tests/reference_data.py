@@ -1,4 +1,4 @@
-from src.method_generator import Field
+from src.java_model import Field
 
 field_exampleAttribute_int = Field(name="exampleAttribute", type="int", description="javadoc description")
 field_someName_String = Field(name="someName", type="String")

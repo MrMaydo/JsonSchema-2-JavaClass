@@ -1,38 +1,8 @@
 import re
-from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 
-JAVA_KEYWORDS = {
-    "abstract", "assert", "boolean", "break", "byte", "case", "catch",
-    "char", "class", "const", "continue", "default", "do", "double",
-    "else", "enum", "extends", "final", "finally", "float", "for",
-    "goto", "if", "implements", "import", "instanceof", "int",
-    "interface", "long", "native", "new", "package", "private",
-    "protected", "public", "return", "short", "static", "strictfp",
-    "super", "switch", "synchronized", "this", "throw", "throws",
-    "transient", "try", "void", "volatile", "while"
-}
-
-JAVA_BUILTIN_TYPES = {
-    "Boolean", "Byte", "Character", "Double", "Float", "Integer", "List", "Long", "Short",
-    "Class", "Object", "String", "Void"
-}
-
-JAVA_LITERALS = {
-    "null", "true", "false"
-}
-
-indent_lvl1 = "    "
-indent_lvl2 = indent_lvl1 * 2
-indent_lvl3 = indent_lvl1 * 3
-return_indent = "        "
-
-
-@dataclass
-class Field:
-    name: str
-    type: str
-    description: Optional[str] = None
+from src.java_model import JAVA_KEYWORDS, JAVA_BUILTIN_TYPES, JAVA_LITERALS, indent_lvl1, indent_lvl2, indent_lvl3, \
+    return_indent, Field
 
 
 def generate_fields_block(fields: List[Field]) -> str:
@@ -129,7 +99,8 @@ def generate_equals(class_name: str, fields: List[Field]) -> str:
         if i == 0:
             equals.append(f"{indent_lvl2}return Objects.equals({getter_name}(), that.{getter_name}()){semicolon}")
         else:
-            equals.append(f"{indent_lvl2}{return_indent}&& Objects.equals({getter_name}(), that.{getter_name}()){semicolon}")
+            equals.append(
+                f"{indent_lvl2}{return_indent}&& Objects.equals({getter_name}(), that.{getter_name}()){semicolon}")
     equals.append(f"{indent_lvl1}}}")
 
     return "\n".join(equals)
@@ -186,4 +157,3 @@ def _validate_java_identifier(name: str) -> None:
 
     if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", name):
         raise ValueError(f"Invalid Java identifier: '{name}'")
-
