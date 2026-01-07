@@ -1,4 +1,5 @@
-from src.enum_generator import to_java_constant
+from src.enum_generator import to_java_constant, generate_enum_class
+from tests.enum_reference_data import *
 
 
 def test_to_java_constant():
@@ -21,3 +22,8 @@ def test_to_java_constant():
     }
     for key in values_expected.keys():
         assert to_java_constant(key) == values_expected[key]
+
+
+def test_generate_enum_class():
+    assert generate_enum_class(enum_AttributeEnum, "ocpp.msgDef.Enumerations") == expected_AttributeEnum
+    assert generate_enum_class(enum_CancelReservationStatusEnum, "ocpp.anotherDef.Enums") == expected_CancelReservationStatusEnum
