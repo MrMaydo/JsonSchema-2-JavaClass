@@ -1,7 +1,7 @@
 import pytest
 
 from tests.reference_data import *
-from src.method_generator import *
+from src.java_method_generator import *
 
 JAVA_KEYWORDS = {
     "abstract", "assert", "boolean", "break", "byte", "case", "catch",
