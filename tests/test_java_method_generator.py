@@ -1,6 +1,6 @@
 import pytest
 
-from tests.reference_data import *
+from tests.reference_data_methods import *
 from src.java_method_generator import *
 
 JAVA_KEYWORDS = {
