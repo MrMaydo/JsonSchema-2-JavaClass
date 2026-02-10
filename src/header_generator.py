@@ -21,7 +21,7 @@ def set_imports(fields: List[Field]) -> str:
 
 
 def render_javadoc(description: Union[str, None], indent_lvl: int) -> str:
-    if description is None or description == "":
+    if not description:
         return ""
 
     return "\n".join([

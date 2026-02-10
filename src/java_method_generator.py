@@ -1,8 +1,8 @@
 import re
 from typing import List
 
-from src.java_model import JAVA_KEYWORDS, JAVA_BUILTIN_TYPES, JAVA_LITERALS, indent_lvl1, indent_lvl2, indent_lvl3, \
-    return_indent, Field
+from src.header_generator import render_javadoc
+from src.java_model import JAVA_KEYWORDS, JAVA_BUILTIN_TYPES, JAVA_LITERALS, Field, indent
 
 
 def generate_fields_block(fields: List[Field]) -> str:
@@ -17,22 +17,10 @@ def generate_field_declaration(field: Field) -> str:
     _validate_java_field_name(field.name)
 
     declaration = [
-        _render_javadoc(field),
-        f"{indent_lvl1}private {field.type} {field.name};"
+        render_javadoc(field.description, indent_lvl=1),
+        f"{indent(1)}private {field.type} {field.name};"
     ]
     return "\n".join(declaration)
-
-
-def _render_javadoc(field: Field) -> str:
-    if field.description is None:
-        return ""
-
-    return "\n".join([
-        "",
-        f"{indent_lvl1}/**",
-        f"{indent_lvl1} * {field.description}",
-        f"{indent_lvl1} */"
-    ])
 
 
 def generate_getters_and_setters(fields: List[Field]) -> str:
@@ -49,9 +37,9 @@ def generate_getter(field: Field) -> str:
 
     getter = [
         "",
-        f"{indent_lvl1}public {field.type} {getter_name}() {{",
-        f"{indent_lvl2}return {field.name};",
-        f"{indent_lvl1}}}"
+        f"{indent(1)}public {field.type} {getter_name}() {{",
+        f"{indent(2)}return {field.name};",
+        f"{indent(1)}}}"
     ]
     return "\n".join(getter)
 
@@ -61,9 +49,9 @@ def generate_setter(field: Field) -> str:
 
     setter = [
         "",
-        f"{indent_lvl1}public void {setter_name}({field.type} {field.name}) {{",
-        f"{indent_lvl2}this.{field.name} = {field.name};",
-        f"{indent_lvl1}}}"
+        f"{indent(1)}public void {setter_name}({field.type} {field.name}) {{",
+        f"{indent(2)}this.{field.name} = {field.name};",
+        f"{indent(1)}}}"
     ]
     return "\n".join(setter)
 
@@ -71,19 +59,19 @@ def generate_setter(field: Field) -> str:
 def generate_equals(class_name: str, fields: List[Field]) -> str:
     equals = [
         "",
-        f"{indent_lvl1}@Override",
-        f"{indent_lvl1}public boolean equals(Object obj) {{",
+        f"{indent(1)}@Override",
+        f"{indent(1)}public boolean equals(Object obj) {{",
 
-        f"{indent_lvl2}if (this == obj)",
-        f"{indent_lvl3}return true;",
+        f"{indent(2)}if (this == obj)",
+        f"{indent(3)}return true;",
 
-        f"{indent_lvl2}if (!(obj instanceof {class_name}))",
-        f"{indent_lvl3}return false;",
+        f"{indent(2)}if (!(obj instanceof {class_name}))",
+        f"{indent(3)}return false;",
 
-        f"{indent_lvl2}{class_name} that = ({class_name}) obj;",
+        f"{indent(2)}{class_name} that = ({class_name}) obj;",
 
         _render_equals_return_statement(fields),
-        f"{indent_lvl1}}}"
+        f"{indent(1)}}}"
     ]
 
     return "\n".join(equals)
@@ -95,20 +83,20 @@ def _render_equals_return_statement(fields: List[Field]) -> str:
         getter_name = _build_getter_name(field.name)
         end_line = ";" if i == (len(fields) - 1) else ""
         if i == 0:
-            return_statement.append(f"{indent_lvl2}return Objects.equals({getter_name}(), that.{getter_name}()){end_line}")
+            return_statement.append(f"{indent(2)}return Objects.equals({getter_name}(), that.{getter_name}()){end_line}")
         else:
             return_statement.append(
-                f"{indent_lvl2}{return_indent}&& Objects.equals({getter_name}(), that.{getter_name}()){end_line}")
+                f"{indent(4)}&& Objects.equals({getter_name}(), that.{getter_name}()){end_line}")
     return "\n".join(return_statement)
 
 
 def generate_hash_code(fields: List[Field]) -> str:
     hash_code = [
         "",
-        f"{indent_lvl1}@Override",
-        f"{indent_lvl1}public int hashCode() {{",
+        f"{indent(1)}@Override",
+        f"{indent(1)}public int hashCode() {{",
         _render_hashcode_return_statement(fields),
-        f"{indent_lvl1}}}"
+        f"{indent(1)}}}"
     ]
 
     return "\n".join(hash_code)
@@ -124,17 +112,17 @@ def _render_hashcode_return_statement(fields: List[Field]) -> str:
 def _render_hashcode_return_statement_single_field(fields: List[Field]) -> str:
     field_name = fields[0].name
     getter_name = _build_getter_name(field_name)
-    return f"{indent_lvl2}return Objects.hash({getter_name}());"
+    return f"{indent(2)}return Objects.hash({getter_name}());"
 
 
 def _render_hashcode_return_statement_multiple_field(fields: List[Field]) -> str:
-    return_statement = [f"{indent_lvl2}return Objects.hash("]
+    return_statement = [f"{indent(2)}return Objects.hash("]
     for index, field in enumerate(fields):
         getter_name = _build_getter_name(field.name)
         comma = "," if index < (len(fields) - 1) else ""
-        return_statement.append(f"{indent_lvl2}{return_indent}{getter_name}(){comma}")
+        return_statement.append(f"{indent(4)}{getter_name}(){comma}")
 
-    return_statement.append(f"{indent_lvl2});")
+    return_statement.append(f"{indent(2)});")
 
     return "\n".join(return_statement)
 

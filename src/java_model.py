@@ -18,10 +18,6 @@ JAVA_BUILTIN_TYPES = {
 JAVA_LITERALS = {
     "null", "true", "false"
 }
-indent_lvl1 = " " * 4
-indent_lvl2 = indent_lvl1 * 2
-indent_lvl3 = indent_lvl1 * 3
-return_indent = "        "
 
 
 @dataclass
