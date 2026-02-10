@@ -1,7 +1,7 @@
 import pytest
 
-from java_model import Field
-from src.header_generator import set_package, set_imports
+from src.java_model import Field
+from src.header_generator import set_package, set_imports, render_javadoc
 
 
 def test_set_package():
@@ -55,3 +55,27 @@ def test_set_imports_no_additional_imports():
     expected = """\
 import java.util.Objects;"""
     assert set_imports(fields) == expected
+
+
+def test_render_javadoc_class_indent():
+    description = "Example class description"
+    expected = """
+/**
+ * Example class description
+ */"""
+    assert render_javadoc(description, 0) == expected
+
+
+def test_render_javadoc_field_indent():
+    description = "Example field description"
+    expected = """
+    /**
+     * Example field description
+     */"""
+    assert render_javadoc(description, 1) == expected
+
+
+def test_render_javadoc_no_description():
+    assert render_javadoc("", 0) == ""
+    assert render_javadoc(None, 0) == ""
+    assert render_javadoc(None, 1) == ""
