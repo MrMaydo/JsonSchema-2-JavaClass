@@ -32,20 +32,22 @@ illegal_names = JAVA_KEYWORDS | JAVA_BUILTIN_TYPES | JAVA_LITERALS | EMPTY_NAMES
 
 def test_generate_getter_integer():
     attr = field_exampleAttribute_int
-
-    assert (generate_getter(attr) == expected_getExampleAttribute_int)
+    assert generate_getter(attr) == expected_getExampleAttribute_int
 
 
 def test_generate_getter_string():
     attr = field_someName_String
-
-    assert (generate_getter(attr) == expected_getSomeName_String)
+    assert generate_getter(attr) == expected_getSomeName_String
 
 
 def test_generate_getter_custom_object():
     attr = field_customData_CustomObject
+    assert generate_getter(attr) == expected_getCustomData_CustomObject
 
-    assert (generate_getter(attr) == expected_getCustomData_CustomObject)
+
+def test_generate_getter_list():
+    attr = field_listOfThings_List_String
+    assert generate_getter(attr) == expected_getListOfThings_list_string
 
 
 def test_generate_getter_invalid_name():
@@ -57,20 +59,22 @@ def test_generate_getter_invalid_name():
 
 def test_generate_setter_integer():
     attr = field_exampleAttribute_int
-
-    assert (generate_setter(attr) == expected_setExampleAttribute_int)
+    assert generate_setter(attr) == expected_setExampleAttribute_int
 
 
 def test_generate_setter_string():
     attr = field_someName_String
-
-    assert (generate_setter(attr) == expected_setSomeName_String)
+    assert generate_setter(attr) == expected_setSomeName_String
 
 
 def test_generate_setter_custom_object():
     attr = field_customData_CustomObject
+    assert generate_setter(attr) == expected_setCustomData_CustomObject
 
-    assert (generate_setter(attr) == expected_setCustomData_CustomObject)
+
+def test_generate_setter_list():
+    attr = field_listOfThings_List_String
+    assert generate_setter(attr) == expected_setListOfThings_list_string
 
 
 def test_generate_setter_invalid_name():
