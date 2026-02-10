@@ -1,5 +1,5 @@
 from src.enum_generator import to_java_constant, generate_enum_class
-from tests.enum_reference_data import *
+from tests.reference_data_enum_class import *
 
 
 def test_to_java_constant():

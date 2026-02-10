@@ -18,10 +18,6 @@ JAVA_BUILTIN_TYPES = {
 JAVA_LITERALS = {
     "null", "true", "false"
 }
-indent_lvl1 = " " * 4
-indent_lvl2 = indent_lvl1 * 2
-indent_lvl3 = indent_lvl1 * 3
-return_indent = "        "
 
 
 @dataclass
@@ -36,3 +32,17 @@ class Field:
     name: str
     type: str
     description: Optional[str] = None
+
+
+@dataclass
+class JavaClass:
+    name: str
+    fields: List[Field]
+    description: Optional[str] = None
+
+
+def indent(level: int, size: int = 4) -> str:
+    if level < 0 or size < 0:
+        raise ValueError("Indent size cannot be lower than 0")
+
+    return " " * size * level
