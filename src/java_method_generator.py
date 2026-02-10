@@ -83,7 +83,8 @@ def _render_equals_return_statement(fields: List[Field]) -> str:
         getter_name = _build_getter_name(field.name)
         end_line = ";" if i == (len(fields) - 1) else ""
         if i == 0:
-            return_statement.append(f"{indent(2)}return Objects.equals({getter_name}(), that.{getter_name}()){end_line}")
+            return_statement.append(
+                f"{indent(2)}return Objects.equals({getter_name}(), that.{getter_name}()){end_line}")
         else:
             return_statement.append(
                 f"{indent(4)}&& Objects.equals({getter_name}(), that.{getter_name}()){end_line}")

@@ -46,7 +46,3 @@ def indent(level: int, size: int = 4) -> str:
         raise ValueError("Indent size cannot be lower than 0")
 
     return " " * size * level
-
-
-
-

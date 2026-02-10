@@ -1,8 +1,8 @@
 import re
 from typing import List
 
-from src.java_model import EnumClass, indent
 from src.header_generator import set_package, render_javadoc
+from src.java_model import EnumClass, indent
 
 
 def to_java_constant(value: str) -> str:
