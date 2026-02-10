@@ -36,3 +36,21 @@ class Field:
     name: str
     type: str
     description: Optional[str] = None
+
+
+@dataclass
+class JavaClass:
+    name: str
+    fields: List[Field]
+    description: Optional[str] = None
+
+
+def indent(level: int, size: int = 4) -> str:
+    if level < 0 or size < 0:
+        raise ValueError("Indent size cannot be lower than 0")
+
+    return " " * size * level
+
+
+
+
